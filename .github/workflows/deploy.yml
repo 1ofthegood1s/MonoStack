@@ -44,5 +44,19 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+      # While the Pages source is still "Deploy from a branch", GitHub also runs
+      # a legacy Jekyll build for every push and whichever deployment finishes
+      # last wins. Wait for the legacy run to complete so ours always lands last.
+      - name: Wait out the legacy branch build
+        run: |
+          for i in $(seq 1 30); do
+            S=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs?head_sha=${{ github.sha }}" \
+              | jq -r 'first(.workflow_runs[] | select(.name == "pages build and deployment")).status // empty')
+            echo "poll $i: legacy build = ${S:-absent}"
+            if [ "$S" = "completed" ]; then break; fi
+            if [ -z "$S" ] && [ "$i" -ge 6 ]; then break; fi
+            sleep 10
+          done
       - id: deployment
         uses: actions/deploy-pages@v4
