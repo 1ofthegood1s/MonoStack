@@ -17,24 +17,49 @@ export const PALETTE = {
   limeBright: '#D4F43A',
   limeDeep: '#8FB215',
   limeInk: '#141A00',
-} as const;
-
-export const BLOCK = {
-  SIZE: 16, // footprint (x and z) — constant; never scaled, trimmed, or sliced
-  HEIGHT: 4,
+  // Monolith solid face tones — from the solid derivation (monolith-game-geometry.js,
+  // 10 Aug 2026). Both are exact 50% sRGB blends of adjacent tokens:
+  neonFront: '#B2D328', // limeDeep · limeBright
+  neonSide: '#A4CC20', // lime · limeDeep
 } as const;
 
 export const GAME = {
   MAX_BLOCKS: 30,
   SPEED: 30, // units/second — identical for every block, no ramping
-  TRAVEL_BOUND: 26, // oscillation half-range around the tower's center axis
   PERFECT_TOLERANCE: 1.0, // offset ≤ this → perfect: snap + flash + streak
-  LAND_TOLERANCE: 8.0, // offset ≤ this → lands (snapped to center); beyond → falls
+  LAND_FRACTION: 0.5, // land while ≥ half the footprint overlaps on the axis
+  TRAVEL_BOUND: { x: 75, z: 32 }, // oscillation half-range per travel axis
+} as const;
+
+// The LILY Monolith solid — brand-exact dimensions in SVG px, from the solid
+// derivation (game block v3): front face = the mark's bbox (1 : 2.008),
+// depth = W/4, front face split along the mark's crease.
+export const MONOLITH = {
+  W: 142.31,
+  H: 285.74,
+  D: 35.58,
+  CREASE_TOP_X: 64.238, // crease x at the top edge (0..W space)
+  CREASE_BOTTOM_X: 99.1535, // crease x at the base
+} as const;
+
+// Each level is a 1/30 horizontal slice of the solid. BLOCK.HEIGHT sets the
+// world scale; W and D follow from the brand proportions.
+export const SCALE = (4 * GAME.MAX_BLOCKS) / MONOLITH.H; // world units per SVG px
+export const BLOCK = {
+  HEIGHT: 4,
+  W: MONOLITH.W * SCALE, // ≈ 59.77 — extent on the X (east) travel axis
+  D: MONOLITH.D * SCALE, // ≈ 14.94 — extent on the Z (north) travel axis
+} as const;
+
+// offset ≤ this → lands (snapped to center); beyond → the block falls.
+export const LAND_TOLERANCE = {
+  x: BLOCK.W * GAME.LAND_FRACTION,
+  z: BLOCK.D * GAME.LAND_FRACTION,
 } as const;
 
 export const CAMERA = {
   FOV: 38,
-  OFFSET: { x: 36, y: 20, z: 36 }, // fixed offset from the active layer center
+  OFFSET: { x: 62, y: 34, z: 62 }, // fixed offset from the active layer center
   RISE_MS: 260, // eased one-block climb per placement
   END_PAN_MS: 3000,
   END_FOV: 44,

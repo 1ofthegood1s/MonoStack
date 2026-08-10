@@ -33,8 +33,8 @@ export class Stage {
       0.1,
       2000,
     );
-    // Level-1 block center: the foundation occupies [0, HEIGHT).
-    const target = new THREE.Vector3(0, BLOCK.HEIGHT * 1.5, 0);
+    // Level-1 block center — the first block lands directly on the ground.
+    const target = new THREE.Vector3(0, BLOCK.HEIGHT * 0.5, 0);
     this.camera.position.set(
       target.x + CAMERA.OFFSET.x,
       target.y + CAMERA.OFFSET.y,

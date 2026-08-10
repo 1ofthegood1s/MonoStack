@@ -17,7 +17,7 @@ export function runEndSequence(
 ): void {
   // Frame the full monolith: put its midpoint END_DISTANCE away along the
   // existing view direction.
-  const towerMid = new THREE.Vector3(0, ((GAME.MAX_BLOCKS + 1) * BLOCK.HEIGHT) / 2, 0);
+  const towerMid = new THREE.Vector3(0, (GAME.MAX_BLOCKS * BLOCK.HEIGHT) / 2, 0);
   const endPos = towerMid.clone().sub(stage.viewDir.clone().multiplyScalar(CAMERA.END_DISTANCE));
   const fromPos = stage.camera.position.clone();
   const fromFov = stage.camera.fov;

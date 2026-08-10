@@ -23,11 +23,6 @@ export class Game {
     private stage: Stage,
     private ui: UI,
   ) {
-    const foundation = makeBlock(0);
-    stylePlaced(foundation);
-    stage.scene.add(foundation.group);
-    this.placed.push(foundation);
-
     ui.update(this.score);
     ui.showStart();
 
@@ -57,11 +52,11 @@ export class Game {
     if (level % 2 === 1) {
       this.axis = 'z';
       this.dir = 1;
-      block.group.position.z = -GAME.TRAVEL_BOUND; // in from the north
+      block.group.position.z = -GAME.TRAVEL_BOUND.z; // in from the north
     } else {
       this.axis = 'x';
       this.dir = -1;
-      block.group.position.x = GAME.TRAVEL_BOUND; // in from the east
+      block.group.position.x = GAME.TRAVEL_BOUND.x; // in from the east
     }
     this.stage.scene.add(block.group);
     this.active = block;
@@ -71,9 +66,10 @@ export class Game {
   update(dt: number): void {
     if (this.state !== 'PLAYING' || !this.active) return;
     const p = this.active.group.position;
+    const bound = GAME.TRAVEL_BOUND[this.axis];
     p[this.axis] += this.dir * GAME.SPEED * dt;
-    if (Math.abs(p[this.axis]) > GAME.TRAVEL_BOUND) {
-      p[this.axis] = Math.sign(p[this.axis]) * GAME.TRAVEL_BOUND;
+    if (Math.abs(p[this.axis]) > bound) {
+      p[this.axis] = Math.sign(p[this.axis]) * bound;
       this.dir = -Math.sign(p[this.axis]);
     }
   }
@@ -84,7 +80,7 @@ export class Game {
     this.state = 'RESOLVING';
 
     const offset = Math.abs(block.group.position[this.axis]);
-    const result = resolvePlacement(offset);
+    const result = resolvePlacement(offset, this.axis);
 
     if (result === 'missed') {
       this.fall(block);
