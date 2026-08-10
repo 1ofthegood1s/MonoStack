@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LILY Monolith</title>
+    <style>
+      /* Palette variables are injected from src/config.ts at boot. */
+      * { margin: 0; box-sizing: border-box; }
+      html, body { height: 100%; overflow: hidden; background: #000; }
+      body {
+        font-family: Menlo, 'SF Mono', ui-monospace, monospace;
+        color: var(--white);
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      #app { position: fixed; inset: 0; }
+      .hud { position: fixed; pointer-events: none; z-index: 1; }
+      #count {
+        top: 24px; left: 50%; transform: translateX(-50%);
+        font-size: 44px; font-weight: 700; letter-spacing: 0.04em;
+        color: var(--lime);
+      }
+      #best {
+        top: 30px; right: 28px;
+        font-size: 14px; letter-spacing: 0.12em;
+        color: var(--white55);
+      }
+      #pips {
+        top: 86px; left: 50%; transform: translateX(-50%);
+        display: flex; gap: 6px;
+      }
+      #pips span { width: 10px; height: 10px; background: var(--lime); }
+      .overlay {
+        position: fixed; inset: 0; z-index: 2;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 22px; text-align: center;
+        background: rgba(0, 0, 0, 0.72);
+      }
+      .overlay.hidden { display: none; }
+      /* Lighter scrim on the win card so the illuminated monolith shows through. */
+      #overlay-won { background: rgba(0, 0, 0, 0.35); }
+      .overlay h1 { font-size: 72px; font-weight: 700; letter-spacing: 0.18em; }
+      .overlay .accent { color: var(--lime); }
+      .overlay p { font-size: 15px; letter-spacing: 0.08em; color: var(--white55); }
+      .overlay button {
+        pointer-events: auto; cursor: pointer;
+        font: inherit; font-size: 15px; letter-spacing: 0.14em;
+        padding: 12px 32px;
+        background: none; border: 1px solid var(--lime); color: var(--lime);
+      }
+      .overlay button:hover { background: var(--lime); color: var(--limeInk); }
+      #reward-slot {
+        min-height: 96px; min-width: 320px;
+        display: flex; align-items: center; justify-content: center;
+        border: 1px dashed var(--hairline);
+        font-size: 12px; letter-spacing: 0.14em; color: var(--white40);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div class="hud" id="count"></div>
+    <div class="hud" id="best"></div>
+    <div class="hud" id="pips"></div>
+
+    <div class="overlay" id="overlay-start">
+      <h1><span class="accent">LILY</span> MONOLITH</h1>
+      <p>STACK 30 BLOCKS. TAP, CLICK, OR PRESS SPACE.</p>
+    </div>
+
+    <div class="overlay hidden" id="overlay-lost">
+      <h1>THE RUN ENDS</h1>
+      <p id="lost-stats"></p>
+      <button data-restart>RESTART</button>
+    </div>
+
+    <div class="overlay hidden" id="overlay-won">
+      <h1 class="accent">LILY</h1>
+      <p id="won-stats"></p>
+      <!-- REWARD_PLACEHOLDER: wire the reward content into #reward-slot below -->
+      <div id="reward-slot">REWARD PLACEHOLDER</div>
+      <button data-restart>PLAY AGAIN</button>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
