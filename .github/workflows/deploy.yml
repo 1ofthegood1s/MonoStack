@@ -28,6 +28,16 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      # Force the Pages source to workflow-deploys so the legacy branch build
+      # stops racing (and overwriting) this deployment.
+      - name: Set Pages source to GitHub Actions
+        run: |
+          curl -s -X PUT \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages" \
+            -d '{"build_type":"workflow"}' -o /tmp/flip.json -w 'flip status: %{http_code}\n'
+          cat /tmp/flip.json
       - uses: actions/configure-pages@v5
         with:
           enablement: true
