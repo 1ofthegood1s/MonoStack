@@ -45,6 +45,8 @@ export class Game {
   private followX = 0; // camera's accumulated tower-drift follow
   private followZ = 0;
 
+  private allowRestartAt = Infinity;
+
   constructor(
     private stage: Stage,
     private ui: UI,
@@ -52,9 +54,9 @@ export class Game {
     private fx: FX,
   ) {
     this.camHome = stage.rig.position.clone();
-    ui.update(this.score);
+    this.reset(); // READY with the first block already sliding behind the overlay
     ui.showStart();
-    ui.onRestart = () => this.reset();
+    ui.onRestart = () => this.restartRun();
     window.addEventListener('pointerdown', () => this.onAction());
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space') {
@@ -67,13 +69,24 @@ export class Game {
   private onAction(): void {
     ensureAudio();
     if (this.state === 'READY') {
+      // The preview block is already mid-flight — just take the controls.
       this.ui.hideOverlays();
       this.state = 'PLAYING';
-      this.spawn();
     } else if (this.state === 'PLAYING') {
       this.drop();
+    } else if (
+      (this.state === 'LOST' || this.state === 'WON') &&
+      performance.now() >= this.allowRestartAt
+    ) {
+      this.restartRun(); // space/tap retries once the overlay has settled
     }
-    // RESOLVING / WON / LOST: input is frozen; overlays own the restart.
+  }
+
+  // One press from a finished run straight into a fresh one.
+  private restartRun(): void {
+    this.reset();
+    this.ui.hideOverlays();
+    this.state = 'PLAYING';
   }
 
   private topCenter(): number {
@@ -93,8 +106,9 @@ export class Game {
   }
 
   // dt in seconds. Constant velocity, ping-pong around the top rect center.
+  // Runs in READY too, so the preview block slides behind the start overlay.
   update(dt: number): void {
-    if (this.state !== 'PLAYING' || !this.active) return;
+    if ((this.state !== 'PLAYING' && this.state !== 'READY') || !this.active) return;
     const p = this.active.group.position;
     let rel = p[this.axis] - this.topCenter() + this.dir * GAME.SPEED * dt;
     if (Math.abs(rel) > this.bound) {
@@ -119,6 +133,7 @@ export class Game {
       sfx.miss();
       this.fx.shake(FX_CONF.SHAKE_MISS);
       this.fx.vibrate(120);
+      this.allowRestartAt = performance.now() + TRIM.MISS_OVERLAY_MS + 500;
       delay(TRIM.MISS_OVERLAY_MS, () => {
         this.state = 'LOST';
         this.ui.showLost(this.score);
@@ -157,6 +172,11 @@ export class Game {
     if (this.score.blocks >= GAME.MAX_BLOCKS) {
       this.state = 'WON';
       sfx.win();
+      this.allowRestartAt =
+        performance.now() +
+        CAMERA.END_PAN_MS +
+        (GAME.MAX_BLOCKS + 1) * FX_CONF.EDGE_LIGHT_STAGGER_MS +
+        1000;
       runEndSequence(this.stage, this.placed, this.ui, this.score);
       return;
     }
@@ -186,7 +206,8 @@ export class Game {
     );
   }
 
-  // Instant in-place restart — no page reload.
+  // Instant in-place restart — no page reload. Ends in READY with the next
+  // run's first block already sliding.
   reset(): void {
     clearTweens();
     this.collapse.reset();
@@ -201,13 +222,13 @@ export class Game {
     this.followX = 0;
     this.followZ = 0;
     this.score = new Score();
+    this.allowRestartAt = Infinity;
     this.stage.rig.position.copy(this.camHome);
     this.stage.camera.fov = CAMERA.FOV;
     this.stage.camera.updateProjectionMatrix();
     this.ui.update(this.score);
-    this.ui.hideOverlays();
     this.state = 'READY';
-    this.ui.showStart();
+    this.spawn();
   }
 
   // Debug/test hooks (used by the headless smoke test).

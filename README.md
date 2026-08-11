@@ -1,9 +1,9 @@
 # LILY Monolith
 
 A single-screen 3D stacking game. Stack 30 blocks — each a 1/30 horizontal
-slice of the brand-exact LILY Monolith solid (front face 1 : 2.008, depth W/4,
-the mark's crease split into the two brand greens) — to reassemble the
-monolith. **Misses get trimmed**: any non-perfect drop keeps only the overlap
+slice of the LILY Monolith solid (front face brand-exact at 1 : 2.008, depth
+W/2 for game presence, the mark's crease split into the two brand greens) —
+to reassemble the monolith. **Misses get trimmed**: any non-perfect drop keeps only the overlap
 with the tower and sheds the overhang as physics debris, so the footprint
 erodes and runs tighten naturally. Only a perfect run rebuilds the true
 monolith. Static camera (translation + FOV only, never rotates), constant

@@ -58,7 +58,10 @@ export const PHYSICS = {
 export const MONOLITH = {
   W: 142.31,
   H: 285.74,
-  D: 35.58,
+  // Depth doubled from the derivation's W/4 (Renato, 11 Aug: "thick, big,
+  // imposing"). The mark's front face stays brand-exact at 1 : 2.008 — depth
+  // never shows in the 2D mark.
+  D: 71.155,
   CREASE_TOP_X: 64.238, // crease x at the top edge (0..W space)
   CREASE_BOTTOM_X: 99.1535, // crease x at the base
 } as const;

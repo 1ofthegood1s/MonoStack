@@ -50,8 +50,10 @@
         background: rgba(0, 0, 0, 0.72);
       }
       .overlay.hidden { display: none; }
-      /* Lighter scrim on the win card so the illuminated monolith shows through. */
-      #overlay-won { background: rgba(0, 0, 0, 0.35); }
+      /* Lighter scrims: the win card reveals the illuminated monolith, the
+         start card reveals the first block already sliding. */
+      #overlay-won, #overlay-start { background: rgba(0, 0, 0, 0.35); }
+      .overlay .hint { font-size: 12px; color: var(--white40); }
       .overlay h1 { font-size: 72px; font-weight: 700; letter-spacing: 0.18em; }
       .overlay .accent { color: var(--lime); }
       .overlay p { font-size: 15px; letter-spacing: 0.08em; color: var(--white55); }
@@ -90,6 +92,7 @@
       <p id="lost-stats"></p>
       <button data-restart>RESTART</button>
       <button data-share>SHARE</button>
+      <p class="hint">SPACE OR TAP TO RETRY</p>
     </div>
 
     <div class="overlay hidden" id="overlay-won">
@@ -99,6 +102,7 @@
       <div id="reward-slot">REWARD PLACEHOLDER</div>
       <button data-restart>PLAY AGAIN</button>
       <button data-share>SHARE</button>
+      <p class="hint">SPACE OR TAP TO PLAY AGAIN</p>
     </div>
 
     <script type="module" src="/src/main.ts"></script>
