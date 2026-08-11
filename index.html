@@ -16,7 +16,10 @@
         -webkit-user-select: none;
       }
       #app { position: fixed; inset: 0; }
-      .hud { position: fixed; pointer-events: none; z-index: 1; }
+      .hud {
+        position: fixed; pointer-events: none; z-index: 1;
+        text-shadow: 0 0 4px rgba(0, 0, 0, 0.95), 0 2px 12px rgba(0, 0, 0, 0.9);
+      }
       #count {
         top: 24px; left: 50%; transform: translateX(-50%);
         font-size: 44px; font-weight: 700; letter-spacing: 0.04em;
@@ -50,25 +53,35 @@
         background: rgba(0, 0, 0, 0.72);
       }
       .overlay.hidden { display: none; }
-      /* Lighter scrims: the win card reveals the illuminated monolith, the
-         start card reveals the first block already sliding. */
-      #overlay-won, #overlay-start { background: rgba(0, 0, 0, 0.35); }
-      .overlay .hint { font-size: 12px; color: var(--white40); }
+      /* See-through scrims (win: the lit monolith, start: the sliding block)
+         that still darken hardest behind the text column for contrast. */
+      #overlay-won, #overlay-start {
+        background: radial-gradient(
+          ellipse 72% 58% at center,
+          rgba(0, 0, 0, 0.78) 0%,
+          rgba(0, 0, 0, 0.30) 100%
+        );
+      }
+      .overlay h1, .overlay p {
+        text-shadow: 0 0 4px rgba(0, 0, 0, 0.95), 0 2px 16px rgba(0, 0, 0, 0.9);
+      }
+      .overlay .hint { font-size: 12px; color: var(--white55); }
       .overlay h1 { font-size: 72px; font-weight: 700; letter-spacing: 0.18em; }
       .overlay .accent { color: var(--lime); }
-      .overlay p { font-size: 15px; letter-spacing: 0.08em; color: var(--white55); }
+      .overlay p { font-size: 15px; letter-spacing: 0.08em; color: var(--white); }
       .overlay button {
         pointer-events: auto; cursor: pointer;
         font: inherit; font-size: 15px; letter-spacing: 0.14em;
         padding: 12px 32px;
-        background: none; border: 1px solid var(--lime); color: var(--lime);
+        background: rgba(0, 0, 0, 0.6); border: 1px solid var(--lime); color: var(--lime);
       }
       .overlay button:hover { background: var(--lime); color: var(--limeInk); }
       #reward-slot {
         min-height: 96px; min-width: 320px;
         display: flex; align-items: center; justify-content: center;
+        background: rgba(0, 0, 0, 0.6);
         border: 1px dashed var(--hairline);
-        font-size: 12px; letter-spacing: 0.14em; color: var(--white40);
+        font-size: 12px; letter-spacing: 0.14em; color: var(--white55);
       }
     </style>
   </head>

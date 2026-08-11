@@ -25,7 +25,18 @@ export function runEndSequence(
     (GAME.MAX_BLOCKS * BLOCK.HEIGHT) / 2,
     (z0 + z1) / 2,
   );
-  const endPos = towerMid.clone().sub(stage.viewDir.clone().multiplyScalar(CAMERA.END_DISTANCE));
+  // Pull back far enough for the current viewport (portrait needs more), then
+  // raise the rig so the tower sits below the HUD — translation only.
+  const halfFov = THREE.MathUtils.degToRad(CAMERA.END_FOV) / 2;
+  const halfH = ((GAME.MAX_BLOCKS * BLOCK.HEIGHT) / 2) * CAMERA.END_MARGIN;
+  const halfW = (Math.hypot(x1 - x0, z1 - z0) / 2) * CAMERA.END_MARGIN;
+  const distance = Math.max(
+    halfH / Math.tan(halfFov),
+    halfW / (Math.tan(halfFov) * stage.camera.aspect),
+    CAMERA.END_MIN_DISTANCE,
+  );
+  const endPos = towerMid.clone().sub(stage.viewDir.clone().multiplyScalar(distance));
+  endPos.y += CAMERA.END_HEADROOM;
   const fromPos = stage.rig.position.clone();
   const fromFov = stage.camera.fov;
 

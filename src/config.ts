@@ -83,7 +83,9 @@ export const CAMERA = {
   RISE_MS: 260, // eased one-block climb per placement
   END_PAN_MS: 3000,
   END_FOV: 44,
-  END_DISTANCE: 215, // pull-back along the fixed view direction (translation only)
+  END_MARGIN: 1.5, // frame the tower with this much breathing room
+  END_MIN_DISTANCE: 160, // floor for the computed pull-back
+  END_HEADROOM: 16, // rig raised by this many units → tower sits below the HUD
 } as const;
 
 export const FX_CONF = {
