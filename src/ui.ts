@@ -1,4 +1,4 @@
-import { GAME, PALETTE } from './config';
+import { GAME, PALETTE, REWARD } from './config';
 import { isMuted, toggleMute } from './audio';
 import type { Score } from './score';
 
@@ -95,6 +95,19 @@ export class UI {
 
   showWon(s: Score): void {
     el('won-stats').textContent = `MONOLITH COMPLETE · ${s.perfects} PERFECT · ${s.points} PTS`;
+    // The reward is earned at REWARD.MIN_PERFECTS; below it, rotate a
+    // consolation line instead.
+    const earned = s.perfects >= REWARD.MIN_PERFECTS;
+    el('reward-slot').classList.toggle('gone', !earned);
+    const consolation = el('consolation');
+    consolation.classList.toggle('gone', earned);
+    if (!earned) {
+      const i =
+        (Number(localStorage.getItem(REWARD.ROTATION_KEY) ?? -1) + 1) %
+        REWARD.CONSOLATION.length;
+      localStorage.setItem(REWARD.ROTATION_KEY, String(i));
+      consolation.textContent = REWARD.CONSOLATION[i];
+    }
     this.overlays.won.classList.remove('hidden');
   }
 }

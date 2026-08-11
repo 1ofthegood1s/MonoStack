@@ -46,6 +46,13 @@ export const SCORING = {
   PERFECT: 25, // × current streak, per perfect placement
 } as const;
 
+export const REWARD = {
+  MIN_PERFECTS: 20, // completed monolith with at least this many perfects → reward
+  // Shown instead of the reward on completions below the bar; rotates per win.
+  CONSOLATION: ['NEXT TIME.', 'TRY AGAIN.', 'GOOD LUCK NEXT TIME.'],
+  ROTATION_KEY: 'lily-monolith-consolation',
+} as const;
+
 export const PHYSICS = {
   GRAVITY: -60, // world units/s² — scaled to 4-unit block heights
   SEPARATION_KICK: 9, // outward impulse for cut slabs

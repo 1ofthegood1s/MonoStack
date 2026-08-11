@@ -53,6 +53,7 @@
         background: rgba(0, 0, 0, 0.72);
       }
       .overlay.hidden { display: none; }
+      .gone { display: none !important; }
       /* See-through scrims (win: the lit monolith, start: the sliding block)
          that still darken hardest behind the text column for contrast. */
       #overlay-won, #overlay-start {
@@ -111,8 +112,11 @@
     <div class="overlay hidden" id="overlay-won">
       <h1 class="accent">LILY</h1>
       <p id="won-stats"></p>
-      <!-- REWARD_PLACEHOLDER: wire the reward content into #reward-slot below -->
+      <!-- REWARD_PLACEHOLDER: wire the reward content into #reward-slot below.
+           Shown only when the completed run had >= REWARD.MIN_PERFECTS perfects;
+           otherwise #consolation rotates through REWARD.CONSOLATION. -->
       <div id="reward-slot">REWARD PLACEHOLDER</div>
+      <p id="consolation" class="gone"></p>
       <button data-restart>PLAY AGAIN</button>
       <button data-share>SHARE</button>
       <p class="hint">SPACE OR TAP TO PLAY AGAIN</p>
