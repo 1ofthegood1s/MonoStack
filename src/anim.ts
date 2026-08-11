@@ -28,6 +28,11 @@ export function delay(ms: number, done: () => void): void {
   tween(ms, () => {}, { ease: linear, done });
 }
 
+// Cancel everything in flight (restart) — pending done() callbacks never fire.
+export function clearTweens(): void {
+  active.length = 0;
+}
+
 export function tickTweens(dtMs: number): void {
   for (let i = active.length - 1; i >= 0; i--) {
     const tw = active[i];

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="LILY favicon">
+  <title>LILY</title>
+  <defs>
+    <linearGradient id="fav-front" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5A5A5A"></stop>
+      <stop offset="1" stop-color="#000000"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" ry="14" fill="#FFFFFF"></rect>
+  <g transform="translate(20, 9) scale(0.084)">
+    <path d="M 1.797 42.958 L 0 270.594 L 99.166 285.719 L 64.238 0 L 1.797 42.958 Z" fill="url(#fav-front)"></path>
+    <path d="M 64.238 0 L 139.394 53.454 L 142.310 256.913 L 99.141 285.736 L 64.238 0 Z" fill="#000000"></path>
+  </g>
+</svg>

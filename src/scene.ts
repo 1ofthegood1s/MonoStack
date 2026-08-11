@@ -1,17 +1,24 @@
 import * as THREE from 'three';
-import { BLOCK, CAMERA, PALETTE } from './config';
+import { BloomEffect, EffectComposer, EffectPass, RenderPass } from 'postprocessing';
+import { BLOCK, CAMERA, FX_CONF, PALETTE } from './config';
 
-// Renderer, camera, lights, backdrop. The camera's orientation is fixed once in
-// the constructor and never changes again — all later motion is translation/FOV.
+// Renderer, camera, lights, backdrop, one bloom pass. The camera's orientation
+// is fixed once in the constructor and never changes again — all later motion
+// is translation/FOV. Bloom is threshold-gated so only bright lime (perfect
+// flash, particles, end light-up) glows; base faces stay clean.
 export class Stage {
   readonly renderer: THREE.WebGLRenderer;
   readonly scene: THREE.Scene;
   readonly camera: THREE.PerspectiveCamera;
+  readonly rig: THREE.Group; // game motion moves the rig; shake moves the camera inside it
   readonly viewDir: THREE.Vector3; // the immutable look direction, unit length
+  private composer: EffectComposer;
 
   constructor(container: HTMLElement) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // 1.5 cap: bloom runs the frame through a composer, so retina-2x would
+    // quadruple the fill cost — 1.5 keeps 60fps headroom on integrated GPUs.
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setClearColor(PALETTE.bg);
     container.appendChild(this.renderer.domElement);
@@ -43,14 +50,41 @@ export class Stage {
     this.camera.lookAt(target); // orientation set once, here, only
     this.viewDir = target.clone().sub(this.camera.position).normalize();
 
+    // Rig: rises/pans translate the rig; FX shake nudges the camera's local
+    // position around (0,0,0) — the two never fight over the same transform.
+    this.rig = new THREE.Group();
+    this.rig.position.copy(this.camera.position);
+    this.camera.position.set(0, 0, 0);
+    this.rig.add(this.camera);
+    this.scene.add(this.rig);
+
+    this.composer = new EffectComposer(this.renderer, {
+      frameBufferType: THREE.HalfFloatType,
+    });
+    this.composer.addPass(new RenderPass(this.scene, this.camera));
+    this.composer.addPass(
+      new EffectPass(
+        this.camera,
+        new BloomEffect({
+          luminanceThreshold: FX_CONF.BLOOM.threshold,
+          luminanceSmoothing: FX_CONF.BLOOM.smoothing,
+          intensity: FX_CONF.BLOOM.intensity,
+          mipmapBlur: true,
+          levels: 5,
+          radius: 0.7,
+        }),
+      ),
+    );
+
     window.addEventListener('resize', () => {
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.composer.setSize(window.innerWidth, window.innerHeight);
     });
   }
 
-  render(): void {
-    this.renderer.render(this.scene, this.camera);
+  render(dt: number): void {
+    this.composer.render(dt);
   }
 }

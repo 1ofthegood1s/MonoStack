@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>LILY Monolith</title>
     <style>
       /* Palette variables are injected from src/config.ts at boot. */
@@ -31,6 +32,17 @@
         display: flex; gap: 6px;
       }
       #pips span { width: 10px; height: 10px; background: var(--lime); }
+      #points {
+        top: 104px; left: 50%; transform: translateX(-50%);
+        font-size: 13px; letter-spacing: 0.12em; color: var(--white55);
+      }
+      #mute {
+        position: fixed; top: 28px; left: 28px; z-index: 1;
+        pointer-events: auto; cursor: pointer;
+        font: inherit; font-size: 11px; letter-spacing: 0.14em;
+        padding: 6px 10px;
+        background: none; border: 1px solid var(--hairline); color: var(--white55);
+      }
       .overlay {
         position: fixed; inset: 0; z-index: 2;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -64,16 +76,20 @@
     <div class="hud" id="count"></div>
     <div class="hud" id="best"></div>
     <div class="hud" id="pips"></div>
+    <div class="hud" id="points"></div>
+    <button id="mute"></button>
 
     <div class="overlay" id="overlay-start">
       <h1><span class="accent">LILY</span> MONOLITH</h1>
-      <p>STACK 30 BLOCKS. TAP, CLICK, OR PRESS SPACE.</p>
+      <p>STACK 30 BLOCKS. MISSES GET TRIMMED.</p>
+      <p>TAP, CLICK, OR PRESS SPACE. M FOR SOUND.</p>
     </div>
 
     <div class="overlay hidden" id="overlay-lost">
       <h1>THE RUN ENDS</h1>
       <p id="lost-stats"></p>
       <button data-restart>RESTART</button>
+      <button data-share>SHARE</button>
     </div>
 
     <div class="overlay hidden" id="overlay-won">
@@ -82,6 +98,7 @@
       <!-- REWARD_PLACEHOLDER: wire the reward content into #reward-slot below -->
       <div id="reward-slot">REWARD PLACEHOLDER</div>
       <button data-restart>PLAY AGAIN</button>
+      <button data-share>SHARE</button>
     </div>
 
     <script type="module" src="/src/main.ts"></script>

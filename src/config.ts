@@ -27,8 +27,29 @@ export const GAME = {
   MAX_BLOCKS: 30,
   SPEED: 30, // units/second — identical for every block, no ramping
   PERFECT_TOLERANCE: 1.0, // offset ≤ this → perfect: snap + flash + streak
-  LAND_FRACTION: 0.5, // land while ≥ half the footprint overlaps on the axis
-  TRAVEL_BOUND: { x: 75, z: 32 }, // oscillation half-range per travel axis
+  ENTRY_CLEARANCE: 14, // spawn distance beyond the tower edge on the travel axis
+  ENTRY_JITTER: 10, // extra random spawn distance — breaks timing memorization
+} as const;
+
+// Trim rules (decision 11 Aug 2026: pure trim, no streak regrowth — overrides
+// the original no-trim brief and the audit gate, Renato's call): any
+// non-perfect drop keeps only the overlap; the overhang breaks off.
+export const TRIM = {
+  MIN_FOOTPRINT: 2, // kept side shorter than this → counts as a total miss
+  MAX_PIECES: 10, // live physics debris cap (oldest culled first)
+  PIECE_LIFE_MS: 4000,
+  MISS_OVERLAY_MS: 1400, // physics plays this long before the LOST overlay
+} as const;
+
+export const SCORING = {
+  BASE: 10, // points per non-perfect placement
+  PERFECT: 25, // × current streak, per perfect placement
+} as const;
+
+export const PHYSICS = {
+  GRAVITY: -60, // world units/s² — scaled to 4-unit block heights
+  SEPARATION_KICK: 9, // outward impulse for cut slabs
+  SPIN: 2.0, // max random angular velocity for debris
 } as const;
 
 // The LILY Monolith solid — brand-exact dimensions in SVG px, from the solid
@@ -43,18 +64,14 @@ export const MONOLITH = {
 } as const;
 
 // Each level is a 1/30 horizontal slice of the solid. BLOCK.HEIGHT sets the
-// world scale; W and D follow from the brand proportions.
+// world scale; W and D follow from the brand proportions. Trimming erodes the
+// footprint from this brand-exact start — only a perfect run rebuilds the
+// true monolith.
 export const SCALE = (4 * GAME.MAX_BLOCKS) / MONOLITH.H; // world units per SVG px
 export const BLOCK = {
   HEIGHT: 4,
   W: MONOLITH.W * SCALE, // ≈ 59.77 — extent on the X (east) travel axis
   D: MONOLITH.D * SCALE, // ≈ 14.94 — extent on the Z (north) travel axis
-} as const;
-
-// offset ≤ this → lands (snapped to center); beyond → the block falls.
-export const LAND_TOLERANCE = {
-  x: BLOCK.W * GAME.LAND_FRACTION,
-  z: BLOCK.D * GAME.LAND_FRACTION,
 } as const;
 
 export const CAMERA = {
@@ -66,11 +83,19 @@ export const CAMERA = {
   END_DISTANCE: 215, // pull-back along the fixed view direction (translation only)
 } as const;
 
-export const FX = {
+export const FX_CONF = {
   FLASH_MS: 320,
-  FALL_MS: 1200,
-  FALL_GRAVITY: 160, // units/s² for the failed-block drop
   EDGE_LIGHT_STAGGER_MS: 45, // bottom-to-top illumination step in the end sequence
+  SHAKE_TRIM: 0.9, // translation-only camera shake amplitude (world units)
+  SHAKE_MISS: 1.8,
+  BURST_PARTICLES: 40,
+  BLOOM: { threshold: 0.72, smoothing: 0.2, intensity: 0.9 },
+} as const;
+
+export const AUDIO = {
+  VOLUME: 0.16, // master gain
+  MUTE_KEY: 'lily-monolith-muted',
 } as const;
 
 export const STORAGE_KEY = 'lily-monolith-best';
+export const STORAGE_KEY_POINTS = 'lily-monolith-best-points';

@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "cannon-es": "^0.20.0",
+    "postprocessing": "^6.39.4",
     "three": "^0.169.0"
   },
   "devDependencies": {
