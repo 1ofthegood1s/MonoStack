@@ -13,9 +13,8 @@ block speed, LILY neon palette, procedural audio.
 
 ```sh
 npm install
-npm run dev        # Vite dev server → http://localhost:5173
-npm run build      # typecheck + production bundle in dist/
-npm run preview    # serve the production bundle (at /MonoStack/)
+npm run dev        # Next.js dev server → http://localhost:3000/MonoStack
+npm run build      # typecheck + static export in out/
 ```
 
 Input: tap, click, or Space drops the block. `M` (or the HUD button) toggles
@@ -41,9 +40,13 @@ Everything tunable lives in `src/config.ts` — nothing else holds a constant:
 
 ## Structure
 
-- `index.html` — HUD + overlay markup and styles (colors via CSS variables
-  injected from config)
-- `src/main.ts` — bootstrap + frame loop (+ `window.__monostack` test hooks)
+Next.js (App Router) shell around framework-agnostic game modules:
+
+- `app/layout.tsx` + `app/globals.css` — document shell and styles
+- `app/page.tsx` — HUD + overlay markup (ids are the contract with `src/ui.ts`)
+- `app/GameCanvas.tsx` — client component; dynamically imports and boots the
+  game after hydration
+- `src/boot.ts` — game bootstrap + frame loop (+ `window.__monostack` test hooks)
 - `src/config.ts` — every tunable constant and the palette
 - `src/game.ts` — state machine (`READY → PLAYING → RESOLVING → WON | LOST`),
   spawner, mover, trim flow, camera follow, instant reset
@@ -71,11 +74,13 @@ Everything tunable lives in `src/config.ts` — nothing else holds a constant:
 | Favicon | `public/favicon.svg` — copied from `~/Desktop/Lily Design System/assets/` (brand-owned) |
 | Color tokens | Copied verbatim from `~/Projects/lily-marketing/visuals/brand-tokens.mjs` (neon rebrand, 9 Aug 2026), plus two solid-derivation face tones that are exact 50% sRGB blends of adjacent tokens: `#B2D328`, `#A4CC20` |
 
-Dependencies: `three` (MIT), `cannon-es` (MIT), `postprocessing` (Zlib) —
-all permissive, license banners preserved in the bundle.
+Dependencies: `three` (MIT), `cannon-es` (MIT), `postprocessing` (Zlib),
+`next`/`react`/`react-dom` (MIT) — all permissive; notices ship in
+`public/THIRD-PARTY-LICENSES.txt`.
 
 ## Build tooling
 
-Plain Vite + TypeScript (`package.json`, `tsconfig.json`, `vite.config.ts` —
-base is `/MonoStack/` for GitHub Pages; set to `/` for a domain root).
-Deploys via `.github/workflows/deploy.yml` on push to `main`.
+Next.js (App Router, TypeScript) as a static export (`next.config.ts`:
+`output: 'export'`, `basePath: '/MonoStack'` for GitHub Pages). To host it as
+a normal Next.js server app — e.g. on Lily — drop those two options and use
+`next start`. Deploys via `.github/workflows/deploy.yml` on push to `main`.

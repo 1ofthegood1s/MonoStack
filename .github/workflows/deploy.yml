@@ -43,7 +43,7 @@ jobs:
           enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: out
       # While the Pages source is still "Deploy from a branch", GitHub also runs
       # a legacy Jekyll build for every push and whichever deployment finishes
       # last wins. Wait for the legacy run to complete so ours always lands last.

@@ -67,3 +67,9 @@ the following restrictions:
    misrepresented as being the original software.
 
 3. This notice may not be removed or altered from any source distribution.
+
+=== next (MIT) ===
+Copyright (c) 2025 Vercel, Inc. — The MIT License
+
+=== react / react-dom (MIT) ===
+Copyright (c) Meta Platforms, Inc. and affiliates. — The MIT License
